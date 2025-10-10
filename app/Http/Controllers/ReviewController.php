@@ -8,13 +8,12 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function store(Request $request, Tree $tree)
     {
+        if (!auth()->check()) {
+            abort(403, 'You must be logged in to leave a review.');
+        }
+
         $request->validate([
             'content' => 'required|string|max:1000',
         ]);

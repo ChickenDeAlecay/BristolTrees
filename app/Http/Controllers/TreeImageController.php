@@ -9,13 +9,12 @@ use Illuminate\Support\Facades\Storage;
 
 class TreeImageController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function store(Request $request, Tree $tree)
     {
+        if (!auth()->check()) {
+            abort(403, 'You must be logged in to upload images.');
+        }
+
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);

@@ -8,19 +8,12 @@ use Illuminate\Http\Request;
 
 class ImageApprovalController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware(function ($request, $next) {
-            if (!auth()->user()->is_admin) {
-                abort(403, 'Unauthorized action.');
-            }
-            return $next($request);
-        });
-    }
-
     public function index()
     {
+        if (!auth()->user() || !auth()->user()->is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $pendingImages = TreeImage::with(['user', 'tree'])
             ->where('approved', false)
             ->latest()
@@ -36,6 +29,10 @@ class ImageApprovalController extends Controller
 
     public function approve(TreeImage $image)
     {
+        if (!auth()->user() || !auth()->user()->is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $image->update(['approved' => true]);
 
         return redirect()->route('admin.images.index')->with('success', 'Image approved successfully!');
@@ -43,6 +40,10 @@ class ImageApprovalController extends Controller
 
     public function reject(TreeImage $image)
     {
+        if (!auth()->user() || !auth()->user()->is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
         \Storage::disk('public')->delete($image->image_path);
         $image->delete();
 

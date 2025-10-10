@@ -8,13 +8,12 @@ use Illuminate\Http\Request;
 
 class RatingController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function store(Request $request, Tree $tree)
     {
+        if (!auth()->check()) {
+            abort(403, 'You must be logged in to rate a tree.');
+        }
+
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
         ]);
